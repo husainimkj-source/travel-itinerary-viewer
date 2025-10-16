@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Travel Itinerary Viewer</title>
+  <style>
+    body { font-family: sans-serif; padding: 20px; }
+    h1 { color: #0077cc; }
+    .section { margin-bottom: 20px; }
+    .day { margin-left: 20px; }
+  </style>
+</head>
+<body>
+  <h1>Travel Itinerary</h1>
+  <div id="output"></div>
+
+  <script>
+    // Parse URL parameter
+    const urlParams = new URLSearchParams(window.location.search);
+    const raw = urlParams.get("rwdata");
+    const data = raw ? JSON.parse(decodeURIComponent(raw)) : {};
+
+    const output = document.getElementById("output");
+
+    function renderSection(title, content) {
+      const div = document.createElement("div");
+      div.className = "section";
+      div.innerHTML = `<h2>${title}</h2><p>${content || "—"}</p>`;
+      output.appendChild(div);
+    }
+
+    renderSection("Guide Name", data.guideName);
+    renderSection("Client Name", data.clientName);
+    renderSection("Package", data.package);
+    renderSection("Client Pax", data.clientPax);
+    renderSection("Remarks", data.remarks);
+    renderSection("Start Date", data.dateStart?.split("T")[0]);
+    renderSection("End Date", data.dateEnd?.split("T")[0]);
+
+    // Itinerary Details
+    const itinerary = document.createElement("div");
+    itinerary.className = "section";
+    itinerary.innerHTML = `<h2>Itinerary</h2>`;
+    Object.entries(data.itenaryDetails || {}).forEach(([day, details]) => {
+      itinerary.innerHTML += `<div class="day"><strong>Day ${day}:</strong><br>${details.replace(/\n/g, "<br>")}</div>`;
+    });
+    output.appendChild(itinerary);
+
+    renderSection("Flight Info", data.flightLink);
+    renderSection("Accommodation", data.accomodation);
+    renderSection("Transportation", data.transportation);
+    renderSection("Tickets", data.tickets);
+  </script>
+</body>
+</html>
